@@ -7,13 +7,11 @@ import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.ImageView
 import android.widget.TextView
-
 import com.bumptech.glide.Glide
 
-import androidx.annotation.LayoutRes
 
-
-class TitleAdapter(context: Context, @param:LayoutRes private val resourceId: Int, objects: List<Title>) : ArrayAdapter<Title>(context, resourceId, objects) {
+class TitleAdapter(context: Context, private val resourceId: Int, objects: List<Title>) :
+        ArrayAdapter<Title>(context, resourceId, objects) {
 
     override fun getView(position: Int, convertView: View?, parent: ViewGroup): View {
         val title = getItem(position)
@@ -25,9 +23,9 @@ class TitleAdapter(context: Context, @param:LayoutRes private val resourceId: In
         if (convertView == null) {
             view = LayoutInflater.from(context).inflate(resourceId, parent, false)
             viewHolder = ViewHolder()
-            viewHolder.titleText = view.findViewById(R.id.title_text)
-            viewHolder.titlePic = view.findViewById(R.id.title_pic)
-            viewHolder.titleDescr = view.findViewById(R.id.descr_text)
+            viewHolder.titleText = view.findViewById(R.id.titleTxT)
+            viewHolder.titlePic = view.findViewById(R.id.thumbnailPic)
+            viewHolder.titleDescr = view.findViewById(R.id.classifyTxT)
             view.tag = viewHolder
         } else {
             view = convertView

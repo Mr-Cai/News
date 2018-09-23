@@ -1,4 +1,4 @@
-package com.news.gson
+package com.news
 
 class News {
     var time: String? = null
