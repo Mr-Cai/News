@@ -1,12 +1,10 @@
 package com.news
 
-import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
-import android.view.View
-import android.widget.AdapterView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_main.*
@@ -16,7 +14,7 @@ import java.util.*
 
 class MainActivity : AppCompatActivity() {
     private val titleList = ArrayList<Title>()
-    lateinit var adapter: TitleAdapter
+    lateinit var adapter: NewsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -26,17 +24,10 @@ class MainActivity : AppCompatActivity() {
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
         actionBar.setDisplayShowTitleEnabled(true)
         actionBar.title = ITEM_SOCIETY
-        adapter = TitleAdapter(this, R.layout.news_item, titleList)
-        listView!!.adapter = adapter
-        listView!!.onItemClickListener = object : AdapterView.OnItemClickListener {
-            var intent = Intent(this@MainActivity, ContentActivity::class.java)
-            override fun onItemClick(parent: AdapterView<*>, view: View, position: Int, id: Long) {
-                val title = titleList[position]
-                intent.putExtra("title", actionBar.title)
-                intent.putExtra("uri", title.uri)
-                startActivity(intent)
-            }
-        }
+        adapter = NewsAdapter(titleList)
+        newsRecycler!!.adapter = adapter
+        newsRecycler.layoutManager = LinearLayoutManager(this)
+
         navigationView.setCheckedItem(R.id.nav_society)
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -73,21 +64,22 @@ class MainActivity : AppCompatActivity() {
         OkHttpClient().newCall(Request.Builder().url(response(itemName)).build())
                 .enqueue(object : Callback {
                     override fun onFailure(call: Call, e: IOException) {
-                        Snackbar.make(listView!!, e.toString(), 2000).show()
+                        Snackbar.make(newsRecycler, e.toString(), 2000).show()
                     }
 
                     override fun onResponse(call: Call, response: Response) {
-                        val responseText = response.body()!!.string()
-                        val newsList = Gson().fromJson(responseText, NewsList::class.java)
+                        val newsList = Gson().fromJson(response.body()!!.string(),
+                                NewsList::class.java)
                         titleList.clear()
                         for (news in newsList.newsList!!) {
-                            val title = Title(news.title!!, news.description!!, news.picUrl!!, news.url!!)
+                            val title = Title(news.title!!, news.description!!, news.ctime!!,
+                                    news.picUrl!!, news.url!!)
                             titleList.add(title)
                         }
                         runOnUiThread {
                             adapter.notifyDataSetChanged()
-                            listView!!.setSelection(0)
-                            refreshLayout!!.isRefreshing = false
+//                            listView.setSelection(0)
+                            refreshLayout.isRefreshing = false
                         }
                     }
                 })
@@ -108,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         return address
     }
 
-    private fun parseString(text: String): String { //通过 actionbar.getTitle() 的参数，返回对应的 ItemName
+    private fun parseString(text: String): String { //通过 actionbar.getTitleTxT() 的参数，返回对应的 ItemName
         when (text) {
             ITEM_SOCIETY -> ITEM_SOCIETY
             ITEM_COUNTY -> ITEM_COUNTY
