@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
-
+apply plugin: 'kotlin-android'
+apply plugin: 'kotlin-android-extensions' //科特林扩展包(根据布局ID自动实例化)
 android {
     compileSdkVersion 28
     defaultConfig {

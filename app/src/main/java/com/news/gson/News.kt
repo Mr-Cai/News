@@ -6,5 +6,4 @@ class News {
     var description: String? = null
     var picUrl: String? = null
     var url: String? = null
-
 }
