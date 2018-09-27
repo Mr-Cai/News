@@ -3,21 +3,21 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/nav_society"
-            android:title="社会新闻" />
+            android:title="@string/society" />
         <item
             android:id="@+id/nav_county"
-            android:title="国内新闻" />
+            android:title="@string/county" />
         <item
             android:id="@+id/nav_internation"
-            android:title="国际新闻" />
+            android:title="@string/international" />
         <item
             android:id="@+id/nav_fun"
-            android:title="娱乐新闻" />
+            android:title="@string/recreation" />
         <item
             android:id="@+id/nav_sport"
-            android:title="体育新闻" />
+            android:title="@string/sport" />
         <item
             android:id="@+id/nav_looker"
-            android:title="美女图片" />
+            android:title="@string/beele" />
     </group>
 </menu>

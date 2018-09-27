@@ -1,19 +1,22 @@
 package com.news
 
 import android.os.Bundle
+import android.view.Menu
 import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.news.NewsBean.News
 import kotlinx.android.synthetic.main.activity_main.*
 import okhttp3.*
 import java.io.IOException
 import java.util.*
 
 class MainActivity : AppCompatActivity() {
-    private val titleList = ArrayList<Title>()
+    private val titleList = ArrayList<News>()
     lateinit var adapter: NewsAdapter
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,7 +30,6 @@ class MainActivity : AppCompatActivity() {
         adapter = NewsAdapter(titleList)
         newsRecycler!!.adapter = adapter
         newsRecycler.layoutManager = LinearLayoutManager(this)
-
         navigationView.setCheckedItem(R.id.nav_society)
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
@@ -44,20 +46,39 @@ class MainActivity : AppCompatActivity() {
 
         refreshLayout.setOnRefreshListener {
             refreshLayout.isRefreshing = true
-            val itemName = parseString((actionBar.title as String?)!!)
+            val itemName = parseString("${actionBar.title}")
             requestData(itemName)
         }
-
         requestData(ITEM_SOCIETY)
     }
 
-    private fun handleCurrentPage(text: String, item: String) { //判断是否是当前页面,如果不是则 请求处理数据
-        val actionBar = supportActionBar
-        if (text != actionBar!!.title!!.toString()) {
-            actionBar.title = text
-            requestData(item)
-            refreshLayout!!.isRefreshing = true
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.search_view, menu)
+        val searchView = menu.findItem(R.id.searchView).actionView as SearchView
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String): Boolean {
+                return false
+            }
+
+            override fun onQueryTextChange(newText: String): Boolean {
+                newsRecycler.adapter = NewsAdapter(filterNews(titleList, newText))
+                adapter.notifyDataSetChanged()
+                return true
+            }
+        })
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    private fun filterNews(data: ArrayList<News>, query: String): ArrayList<News> {
+        val filterSet = ArrayList<News>()
+        for (filter in data) if (filter.title.toUpperCase().contains(query.toUpperCase())) filterSet.add(filter)
+        return filterSet
+    }
+
+    private fun handleCurrentPage(text: String, item: String) { //请求并处理数据
+        supportActionBar!!.title = text
+        requestData(item)
+        refreshLayout!!.isRefreshing = true
     }
 
     private fun requestData(itemName: String) { //请求处理数据 根据返回到的 URL 链接进行申请和返回数据
@@ -68,18 +89,13 @@ class MainActivity : AppCompatActivity() {
                     }
 
                     override fun onResponse(call: Call, response: Response) {
-                        val newsList = Gson().fromJson(response.body()!!.string(),
-                                NewsList::class.java)
+                        val parseData = Gson().fromJson(response.body()!!.string(), NewsBean::class.java)
                         titleList.clear()
-                        for (news in newsList.newsList!!) {
-                            val title = Title(news.title!!, news.description!!, news.ctime!!,
-                                    news.picUrl!!, news.url!!)
-                            titleList.add(title)
-                        }
+                        for (news in parseData.newsList) titleList.add(News(news.title,
+                                news.description, news.ctime, news.picUrl, news.url))
                         runOnUiThread {
-                            adapter.notifyDataSetChanged()
-//                            listView.setSelection(0)
-                            refreshLayout.isRefreshing = false
+                            adapter.notifyDataSetChanged() //数据加载完毕通知适配器数据集改变
+                            refreshLayout.isRefreshing = false //加载完成停止刷新
                         }
                     }
                 })

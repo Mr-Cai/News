@@ -9,18 +9,18 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import kotlinx.android.synthetic.main.news_item.view.*
-
-class NewsAdapter(var news: ArrayList<Title>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder =
-            ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.news_item, parent, false))
+import com.news.NewsBean.News
+class NewsAdapter(var news: ArrayList<News>) : RecyclerView.Adapter<NewsAdapter.ViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
+            LayoutInflater.from(parent.context).inflate(R.layout.news_item, parent, false))
 
     override fun getItemCount(): Int = news.size
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.titleTxT.text = news[position].title
-        holder.classifyTxT.text = news[position].descr
-        holder.timeTxT.text = news[position].time
-        Glide.with(holder.itemView.context).load(news[position].imageUrl).into(holder.thumbnailPic)
+        holder.classifyTxT.text = news[position].description
+        holder.timeTxT.text = news[position].ctime
+        Glide.with(holder.itemView.context).load(news[position].picUrl).into(holder.thumbnailPic)
         holder.itemView.setOnClickListener {
 
         }
