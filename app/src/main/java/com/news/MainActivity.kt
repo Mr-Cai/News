@@ -3,6 +3,7 @@ package com.news
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.GravityCompat
@@ -21,16 +22,18 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
         actionBar.setDisplayShowTitleEnabled(true)
         actionBar.title = ITEM_SOCIETY
+        requestData(ITEM_SOCIETY) //默认请求频道
         adapter = NewsAdapter(titleList)
         newsRecycler!!.adapter = adapter
         newsRecycler.layoutManager = LinearLayoutManager(this)
-        navigationView.setCheckedItem(R.id.nav_society)
+        navigationView.setCheckedItem(R.id.nav_society) //设置侧滑菜单默认选中项
         navigationView.setNavigationItemSelectedListener { item ->
             when (item.itemId) {
                 R.id.nav_society -> handleCurrentPage(ITEM_SOCIETY, ITEM_SOCIETY)
@@ -43,13 +46,11 @@ class MainActivity : AppCompatActivity() {
             drawerLayout.closeDrawers()
             true
         }
-
         refreshLayout.setOnRefreshListener {
             refreshLayout.isRefreshing = true
             val itemName = parseString("${actionBar.title}")
-            requestData(itemName)
+            requestData(itemName) //切换频道
         }
-        requestData(ITEM_SOCIETY)
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -91,8 +92,10 @@ class MainActivity : AppCompatActivity() {
                     override fun onResponse(call: Call, response: Response) {
                         val parseData = Gson().fromJson(response.body()!!.string(), NewsBean::class.java)
                         titleList.clear()
-                        for (news in parseData.newsList) titleList.add(News(news.title,
-                                news.description, news.ctime, news.picUrl, news.url))
+                        for (news in parseData.newsList) {
+                            titleList.add(News(news.title,
+                                    news.description, news.ctime, news.picUrl, news.url))
+                        }
                         runOnUiThread {
                             adapter.notifyDataSetChanged() //数据加载完毕通知适配器数据集改变
                             refreshLayout.isRefreshing = false //加载完成停止刷新
