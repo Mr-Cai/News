@@ -1,7 +1,6 @@
 package com.news
 
 import android.annotation.SuppressLint
-import android.graphics.Color
 import android.os.Bundle
 import android.view.MenuItem
 import android.webkit.WebViewClient
@@ -13,14 +12,13 @@ import com.news.NewsAdapter.Companion.URL
 import kotlinx.android.synthetic.main.activity_content.*
 
 class ContentActivity : AppCompatActivity() {
-    @SuppressLint("SetJavaScriptEnabled")
+    @SuppressLint("SetJavaScriptEnabled", "RestrictedApi")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_content)
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_back)
         actionBar.setDisplayShowTitleEnabled(true)
         webView!!.settings.javaScriptEnabled = true
         webView!!.webViewClient = WebViewClient()

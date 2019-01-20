@@ -25,7 +25,7 @@ class NewsAdapter(var news: ArrayList<News>) : RecyclerView.Adapter<NewsAdapter.
         val context = holder.itemView.context
         Glide.with(context).load(news[position].picUrl).into(holder.thumbnailPic)
         holder.itemView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ContentActivity::class.java)
+            val intent = Intent(context, ContentActivity::class.java)
             intent.putExtra(URL, news[position].url)
             intent.putExtra(TITLE, news[position].title)
             intent.putExtra(PIC, news[position].picUrl)

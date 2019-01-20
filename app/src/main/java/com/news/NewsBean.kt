@@ -3,7 +3,7 @@ package com.news
 import com.google.gson.annotations.SerializedName
 
 open class NewsBean {
-    @SerializedName("newslist")//json数组名需要序列化
+    @SerializedName("newslist") // 字段冲突要注解修正
     lateinit var newsList: List<News>
 
     data class News(

@@ -26,10 +26,10 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(toolbar)
         val actionBar = supportActionBar!!
         actionBar.setDisplayHomeAsUpEnabled(true)
-        actionBar.setHomeAsUpIndicator(R.drawable.ic_menu)
+        actionBar.setHomeAsUpIndicator(R.drawable.ic_fingerprint)
         actionBar.setDisplayShowTitleEnabled(true)
         actionBar.title = ITEM_SOCIETY
-        requestData(ITEM_SOCIETY) //默认请求频道
+        requestData(ITEM_SOCIETY) // 默认请求频道
         adapter = NewsAdapter(titleList)
         newsRecycler!!.adapter = adapter
         newsRecycler.layoutManager = LinearLayoutManager(this)
